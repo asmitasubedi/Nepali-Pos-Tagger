@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Parts-of-Speech Tagger for Nepali Text Using SVM</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <style>
+        .midImg
+        {
+            position:absolute;
+            left:140px;
+            top:25%;
+        }
+        /*<form action="{{ url_for('predict') }}" method="post" >*/
+        .list-group-item-nn
+        {
+             color:white;
+                background: rgba(193, 33, 28, 0.56);
+        }
+        .list-group-item-np
+        {
+             color:white;
+             background: rgba(43, 65, 193, 0.56);
+        }
+        .list-group-item-jx{
+                color:white;
+                background: rgba(55, 193, 32, 0.56);
+        }
+        .list-group-item-ikm{
+             color:white;
+            background: rgba(144, 25, 222, 0.56);
+        }
+        .list-group-item-ve{
+            color:white;
+            background: rgba(18, 193, 132, 0.56);
+        }
+        .list-group-item-vn{
+           color:white;
+                background: rgba(193, 17, 98, 0.56);
+        }
+        .list-group-item-ddx{
+            color:white;
+                background: rgba(225, 221, 21, 0.56);
+        }
+        .list-group-item-vvyn1{
+            color:white;background: darkred;
+        }
+        .list-group-item-vvyx2{
+           color:white;background: darkmagenta;
+        }
+        .list-group-item-csa{
+            color:white;background: darkorange;
+        }
+        .list-group-item-yf{
+            color:white;background: darkslategray;
+        }
+        .list-group-item-ii{
+            color:white;background: darkturquoise;
+        }
+        .list-group-item-ie{
+            color:white;background: #4f1619;
+        }
+        .list-group-item-fb{
+            color:white;background: #679312;
+        }
+        .list-group-item-cc{
+            color:white;background: #4e094f;
+        }
+        .list-group-item-mom{
+            color:white;background: #e52962;
+        }
+        .list-group-item-mm{
+            color: white;background: #6fc010;
+        }
+        .list-group-item-vi{
+            color: white;background: #ac1a3e;
+        }
+        .list-group-item-tt{
+            color: white;background: #24234f;
+        }
+        .list-group-item-vq{
+            color: white;background: #e5b923;
+        }
+        .btn:hover
+        {
+            background-color: inherit;
+            color:inherit;
+        }
+
+        .modal-title{
+            background-color: white;
+            color:black;
+        }
+
+        .modal-body
+        {
+            background-color: white;
+            color:black;
+        }
+
+        .modal-content
+        {
+            background-color: white;
+            color:black;
+        }
+
+        .navbar-color
+        {
+            background-color: inherit;
+        }
+
+    </style>
+</head>
+<body onload="myFunction()" style="background-color: #1E202B;">
+
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/">
+
+          <img src="static/logo.png" alt="" style="height: 90px;width: 300px">
+      </a>
+    </div>
+     </div>
+</nav>
+<br><br>
+<div class="container">
+<div class="jumbotron" style="padding:0;margin-top:-20px ">
+    <img src="http://cf.ydcdn.net/1.0.1.80/images/open-book.jpg" style="height: 250px;width: 100%;position:relative">
+    <div class="midImg"><h1 style="font-weight: 900;color:rgba(67, 0, 0, 0.99);font-family: 'Comic Sans MS';font-weight: bold">
+
+        नेपाली POS Tagger
+    </h1>
+        <h3 style="margin-left: 378px;font-weight: bold">Asmita Subedi</h3>
+    </div>
+
+        <!--<img src="static/blackboard.png" alt="" height="100px" width="700px">-->
+
+
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+
+            <div class="well well-lg">
+              <h2 id = "p2" style="color:black">OUTPUT</h2>
+
+            <p id="phrase1" style="font-size:16px;color:black">
+                     {%for sen,pos in sen_pos%}
+                    <span id="phrase" style="font-size: 22px">{{ sen }} {{ pos }}</span>
+              {% endfor %}
+                </p>
+                <br><br>
+                <p style="background: #FAEBCC;color:black;padding:16px;font-size:15px;height: 50px"> * Computers can make mistakes too!</p>
+            </div>
+            <script>
+        function myFunction()
+        {
+            var s1 = document.getElementById("phrase1");
+            var str = s1.innerText;
+{#            alert(str);#}
+             var res = str.split(" ");
+            var reslen = res.length;
+            var newText = "";
+
+            for (var i = 1; i < reslen; i++) {
+                if (res[i] == "NN") {
+                    newText += "<a href=''  class='list-group-item-nn' style='color:black' data-toggle='tooltip' title='Proper Noun' data-placement='bottom' " + res[i - 1].fontcolor("black") + "/NN</a>"
+                }
+                else if (res[i] == "NP") {
+                    newText += "<a href=''   class='list-group-item-np' style='color:black' data-toggle='tooltip' title='Proper Noun' data-placement='bottom' >" + res[i - 1].fontcolor("black") + "/NP</a>";
+                }
+                else if (res[i] == "JX") {
+                    newText += "<a href=''   class='list-group-item-jx' style='color:black' data-toggle='tooltip' title='Unmarked adjective' data-placement='bottom' >" + res[i - 1].fontcolor("black") + "/JX</a>";
+                }
+                else if (res[i] == "IKM") {
+                    newText += "<a href=''  class='list-group-item-ikm' style='color:black' data-toggle='tooltip' title='Masculine Genitive Postposition ' data-placement='bottom' >" + res[i - 1].fontcolor("black") + "/IKM</a>";
+                }
+                else if (res[i] == "VE") {
+                    newText += "<a href=''   class='list-group-item-ve' style='color:black' data-toggle='tooltip' title='e(ko)-participle verb' data-placement='bottom' >" + res[i - 1].fontcolor("black") + "/VE</a>";
+                }
+                else if (res[i] == "VN") {
+                    newText += "<a href=''  class='list-group-item-vn' style='color:black' data-toggle='tooltip' title='ne-participle verb(VN)' data-placement='bottom' >" + res[i - 1].fontcolor("black") + "/VN</a>";
+                }
+                else if (res[i] == "DDX") {
+                    newText += "<a href=''   class='list-group-item-ddx' style='color:black' data-toggle='tooltip' title='Unmarked demonstrative determiner' data-placement='bottom' >" + res[i - 1].fontcolor("black") + "/DDX</a>";
+                }
+                else if (res[i] == "VVYN1") {
+                    newText += "<a href=''   class='list-group-item-vvyn1' style='color:black' data-toggle='tooltip' title='Third person non-honorific singular verb' data-placement='bottom' >" + res[i - 1].fontcolor("black") + "/VVYN1</a>";
+                }
+                else if (res[i] == "VVYX2") {
+                    newText += "<a href=''   class='list-group-item-vvyx2' style='color:black' data-toggle='tooltip' title='Third person plural (or medial-honorific singular) verb' data-placement='bottom' >" + res[i - 1].fontcolor("black") + "/VVYX2</a>";
+                }
+                else if (res[i] == "CSA") {
+                    newText += "<a href=''   class='list-group-item-csa' style='color:black' data-toggle='tooltip' title='Subordinating conjunction appearing after the clause' data-placement='bottom' >" + res[i - 1].fontcolor("black") + "/CSA</a>";
+                }
+                else if (res[i] == "YF") {
+                    newText += "<a href=''   class='list-group-item-yf' style='color:black' data-toggle='tooltip' title='Sentence-final punctuation' data-placement='bottom' >" + res[i - 1].fontcolor("black") + "/YF</a>";
+                }
+                else if (res[i] == "II") {
+                    newText += "<a href=''   class='list-group-item-ii' style='color:black' data-toggle='tooltip' title='Postposition' data-placement='bottom' >" + res[i - 1].fontcolor("black") + "/II</a>";
+                }
+                else if (res[i] == "IE") {
+                    newText += "<a href=''   class='list-group-item-ie' style='color:black' data-toggle='tooltip' title='Ergative-instrumental postposition' data-placement='bottom' >" + res[i - 1].fontcolor("black") + "/IE</a>";
+                }
+                else if (res[i] == "FB") {
+                    newText += "<a href=''   class='list-group-item-fb' style='color:black' data-toggle='tooltip' title='Abbreviation' data-placement='bottom' >" + res[i - 1].fontcolor("black") + "/FB</a>";
+                }
+                else if (res[i] == "CC") {
+                    newText += "<a href=''   class='list-group-item-cc' style='color:black' data-toggle='tooltip' title='Coordinating conjunction' data-placement='bottom' >" + res[i - 1].fontcolor("black") + "/CC</a>";
+                }
+                else if (res[i] == "MOM") {
+                    newText += "<a href=''   class='list-group-item-mom' style='color:black' data-toggle='tooltip' title='Masculine ordinal number' data-placement='bottom' >" + res[i - 1].fontcolor("black") + "/MOM</a>";
+                }
+                else if (res[i] == "MM") {
+                    newText += "<a href=''   class='list-group-item-mm' style='color:black' data-toggle='tooltip' title='Cardinal number' data-placement='bottom' >" + res[i - 1].fontcolor("black") + "/MM</a>";
+                }
+                else if (res[i] == "VI") {
+                    newText += "<a href=''   class='list-group-item-vi' style='color:black' data-toggle='tooltip' title='Infinitive verb' data-placement='bottom' >" + res[i - 1].fontcolor("black") + "/VI</a>";
+                }
+                else if (res[i] == "TT") {
+                    newText += "<a href=''   class='list-group-item-tt' style='color:black' data-toggle='tooltip' title='Particle' data-placement='bottom' >" + res[i - 1].fontcolor("black") + "/TT</a>";
+                }
+                else if (res[i] == "VQ") {
+                    newText += "<a href=''   class='list-group-item-vq' style='color:black' data-toggle='tooltip' title='Sequential participle-converb' data-placement='bottom' >" + res[i - 1].fontcolor("black") + "/VQ</a>";
+                }
+                else {
+                    newText += " ";
+                }
+            }
+            s1.innerHTML = newText;
+        }
+    </script>
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+</script>
+        </div>
+             <div class="col-md-4">
+                <div class="jumbotron" style="padding:20px;background-color: transparent;color:white">
+
+
+                    <ul class="list-group">
+                      <li class="btn list-group-item list-group-item-nn" data-toggle="modal" data-target="#myModalNN">Common noun(NN)</li>
+                         <!--modal starts-->
+                        <div class="modal fade" id="myModalNN" role="dialog">
+                                <div class="modal-dialog">
+
+                                  <!-- Modal content-->
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                      <h4 class="modal-title">Common Noun (NN)</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                      <p>Examples (Devanagari) </p>
+                                        <ul>
+                                            <li>केटो</li>
+                                            <li>केटा</li>
+                                        </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+
+                                </div>
+                              </div>
+                        <!--end of modal-->
+                        <li class="btn list-group-item list-group-item-np" data-toggle="modal" data-target="#myModalNP">Proper Noun(NP)</li>
+                         <!--modal starts-->
+                        <div class="modal fade" id="myModalNP" role="dialog">
+                                <div class="modal-dialog">
+
+                                  <!-- Modal content-->
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                      <h4 class="modal-title">Proper Noun(NP)</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                      <p>Examples (Devanagari) </p>
+                                        <ul>
+                                            <li>राम</li>
+                                            <li>पुष्प</li>
+                                        </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+
+                                </div>
+                              </div>
+                        <!--end of modal-->
+                      <li class="btn list-group-item list-group-item-jx" data-toggle="modal" data-target="#myModalJX">Unmarked adjective(JX)</li>
+                         <!--modal starts-->
+                        <div class="modal fade" id="myModalJX" role="dialog">
+                                <div class="modal-dialog">
+
+                                  <!-- Modal content-->
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                      <h4 class="modal-title">Unmarked adjective(JX)</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                      <p>Examples (Devanagari) </p>
+                                        <ul>
+                                            <li>सफा</li>
+                                            <li>धनी</li>
+                                            <li>असल</li>
+                                        </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+
+                                </div>
+                              </div>
+                        <!--end of modal-->
+                        <li class="btn list-group-item list-group-item-ikm" data-toggle="modal" data-target="#myModalIKM">Masculine genitive postposition(IKM)</li>
+                        <!--modal starts-->
+                        <div class="modal fade" id="myModalIKM" role="dialog">
+                                <div class="modal-dialog">
+
+                                  <!-- Modal content-->
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                      <h4 class="modal-title">Masculine Genitive Postposition(IKM)</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                      <p>Examples (Devanagari) </p>
+                                        <ul>
+                                            <li>को </li>
+
+                                        </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+
+                                </div>
+                              </div>
+                        <!--end of modal-->
+                        <li class="btn list-group-item list-group-item-ve" data-toggle="modal" data-target="#myModalVE">e(ko)-participle verb(VE)</li>
+                        <!--modal starts-->
+                        <div class="modal fade" id="myModalVE" role="dialog">
+                                <div class="modal-dialog">
+
+                                  <!-- Modal content-->
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">Close;</button>
+                                      <h4 class="modal-title">e(ko)-participle verb(VE)</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                      <p>Examples (Devanagari) </p>
+                                        <ul>
+                                            <li>गरेको</li>
+                                            <li>गरे</li>
+                                        </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                        <!--end of modal-->
+                        <li class="btn list-group-item list-group-item-vn" data-toggle="modal" data-target="#myModalVN">ne-participle verb(VN)</li>
+                        <!--modal starts-->
+                        <div class="modal fade" id="myModalVN" role="dialog">
+                                <div class="modal-dialog">
+
+                                  <!-- Modal content-->
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                      <h4 class="modal-title">ne-participle verb(VN)</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                      <p>Examples (Devanagari) </p>
+                                        <ul>
+                                            <li> गर्ने</li>
+                                            <li> नगर्ने</li>
+                                        </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+
+                                </div>
+                              </div>
+                        <!--end of modal-->
+
+                      <li class="btn list-group-item list-group-item-ddx" data-toggle="modal" data-target="#myModalDDX">Unmarked demonstrative determiner(DDX)</li>
+                        <!--modal starts-->
+                        <div class="modal fade" id="myModalDDX" role="dialog">
+                                <div class="modal-dialog">
+                                  <!-- Modal content-->
+
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                      <h4 class="modal-title">Unmarked Demonstrative Determiner (DDX)</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                      <p>Examples (Devanagari) </p>
+                                        <ul>
+                                            <li>यो</li>
+                                            <li>यिनी</li>
+                                            <li>यस</li>
+                                      </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+
+                                </div>
+                              </div>
+                        <!--end of modal-->
+
+                      <li class="btn list-group-item list-group-item-vvyn1" data-toggle="modal" data-target="#myModalVV">Third person non-honorific singular verb(VVYN1)</li>
+                        <!--modal starts-->
+                        <div class="modal fade" id="myModalVV" role="dialog">
+                                <div class="modal-dialog">
+                                <!-- Modal content-->
+
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                      <h4 class="modal-title">Third person non-honorific singular verb(VVYN1)</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                      <p>Examples (Devanagari) </p>
+                                        <ul>
+                                            <li>गर्थ्यो</li>
+                                            <li>गरेन</li>
+                                            <li>छ</li>
+                                        </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+
+                                </div>
+                              </div>
+                        <!--end of modal-->
+                        <li class="btn list-group-item list-group-item-vvyx2" data-toggle="modal" data-target="#myModalVVYX2">Third person plural verb(VVYX2)</li>
+                        <!--modal starts-->
+                        <div class="modal fade" id="myModalVVYX2" role="dialog">
+                                <div class="modal-dialog">
+
+                                  <!-- Modal content-->
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">Close</button>
+                                      <h4 class="modal-title">Third person plural (or medial-honorific singular) verb(VVYX2)</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                      <p>Examples (Devanagari) </p>
+                                        <ul>
+                                            <li>गर्थे</li>
+                                            <li>हुन्</li>
+                                            <li>गर्नेछन </li>
+                                            <li>गरेनन</li>
+                                            <li>गरे</li>
+                                        </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                        <!--end of modal-->
+                      <li class="btn list-group-item list-group-item-csa" data-toggle="modal" data-target="#myModalCSA">Subordinating conjunction after the clause(CSA)</li>
+                        <!--modal starts-->
+                        <div class="modal fade" id="myModalCSA" role="dialog">
+                                <div class="modal-dialog">
+
+                                  <!-- Modal content-->
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                      <h4 class="modal-title">Subordinating conjunction appearing after the clause(CSA)</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                      <p>Examples (Devanagari) </p>
+                                        <ul>
+                                            <li>भनी</li>
+                                            <li>भनेर</li>
+                                            <li>भन्ने </li>
+                                        </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                        <!--end of modal-->
+
+                        <li class="btn list-group-item list-group-item-yf" data-toggle="modal" data-target="#myModalYF">Sentence-final punctuation(YF)</li>
+                        <!--modal starts-->
+                        <div class="modal fade" id="myModalYF" role="dialog">
+                                <div class="modal-dialog">
+
+                                  <!-- Modal content-->
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                      <h4 class="modal-title">Sentence-final punctuation(YF)</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                      <p>Examples (Devanagari) </p>
+                                        <ul>
+                                            <li>? </li>
+                                            <li>||</li>
+                                            <li>,</li>
+                                        </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+
+                                </div>
+                              </div>
+                        <!--end of modal-->
+                        <li class="btn list-group-item list-group-item-ii" data-toggle="modal" data-target="#myModalII">Postposition(II)</li>
+                        <!--modal starts-->
+                        <div class="modal fade" id="myModalII" role="dialog">
+                                <div class="modal-dialog">
+
+                                  <!-- Modal content-->
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">Close</button>
+                                      <h4 class="modal-title">Postposition(II)</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                      <p>Examples (Devanagari) </p>
+                                        <ul>
+                                            <li>माथि</li>
+                                            <li>मा</li>
+                                            <li>द्वारा</li>
+                                            <li>बाट</li>
+                                            <li>पछाडी</li>
+                                            <li>अगाडि</li>
+                                        </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                        <!--end of modal-->
+                         <li class="btn list-group-item list-group-item-ie" data-toggle="modal" data-target="#myModalIE">Ergative-instrumental postposition(IE)</li>
+                        <!--modal starts-->
+                        <div class="modal fade" id="myModalIE" role="dialog">
+                                <div class="modal-dialog">
+
+                                  <!-- Modal content-->
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">Close</button>
+                                      <h4 class="modal-title">Ergative-instrumental postposition(IE)</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                      <p>Examples (Devanagari) </p>
+                                        <ul>
+                                            <li>ले</li>
+                                        </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                        <!--end of modal-->
+                        <li class="btn list-group-item list-group-item-fb" data-toggle="modal" data-target="#myModalFB">Abbreviation(FB)</li>
+                        <!--modal starts-->
+                        <div class="modal fade" id="myModalFB" role="dialog">
+                                <div class="modal-dialog">
+
+                                  <!-- Modal content-->
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">Close</button>
+                                      <h4 class="modal-title">Abbreviation(FB)</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                      <p>Examples (Devanagari) </p>
+                                        <ul>
+                                            <li>डा.</li>
+                                            <li>म. प. प.</li>
+                                        </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                        <!--end of modal-->
+                        <li class="btn list-group-item list-group-item-cc" data-toggle="modal" data-target="#myModalCC">Coordinating conjunction(CC)</li>
+                        <!--modal starts-->
+                        <div class="modal fade" id="myModalCC" role="dialog">
+                                <div class="modal-dialog">
+
+                                  <!-- Modal content-->
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">Close</button>
+                                      <h4 class="modal-title">Coordinating conjunction(CC)</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                      <p>Examples (Devanagari) </p>
+                                        <ul>
+                                            <li>र</li>
+                                            <li>तथा</li>
+                                        </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                        <!--end of modal-->
+                        <li class="btn list-group-item list-group-item-mom" data-toggle="modal" data-target="#myModalMOM">Masculine ordinal number(MOM)</li>
+                        <!--modal starts-->
+                        <div class="modal fade" id="myModalMOM" role="dialog">
+                                <div class="modal-dialog">
+
+                                  <!-- Modal content-->
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">Close</button>
+                                      <h4 class="modal-title">Masculine ordinal number(MOM)</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                      <p>Examples (Devanagari) </p>
+                                        <ul>
+                                            <li>पहिलो</li>
+                                            <li>दोस्रो</li>
+                                            <li>तेस्रो</li>
+                                            <li>चौथो</li>
+                                        </ul>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                        <!--end of modal-->
+                    </ul>
+                </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

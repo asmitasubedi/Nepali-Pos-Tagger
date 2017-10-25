@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Parts-of-Speech Tagger for Nepali Text Using SVM</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <style>
+        .midImg
+        {
+            position:absolute;
+            left:80px;
+            top:18%;
+        }
+
+    </style>
+</head>
+<body onload="myFunction()">
+
+
+<div class="jumbotron" style="padding:0;margin-top:-20px ">
+    <img src="http://cf.ydcdn.net/1.0.1.80/images/open-book.jpg" style="height: 350px;width: 100%;position:relative">
+    <div class="midImg"><h1 style="font-weight: 900;color:rgba(67, 0, 0, 0.99);font-family: 'Comic Sans MS';font-weight: bold">
+        नेपाली POSTagger
+    </h1>
+        <h3 style="margin-left: 350px;font-weight: bold">Asmita Subedi</h3>
+    </div>
+</div>
+
+
+<center>
+
+          <div class="col-md-6">
+              <h2 id = "p2">OUTPUT</h2>
+
+            <p id="phrase1">
+                     {%for sen,pos in sen_pos%}
+                    <span id="phrase">{{ sen }} {{ pos }}</span>
+              {% endfor %}
+                </p>
+          </div>
+
+
+
+ <script>
+        function myFunction() {
+            var s1 = document.getElementById("phrase1");
+            var str = s1.innerText;
+            alert(str);
+             var res = str.split(" ");
+
+            var reslen = res.length;
+            var newText = "";
+
+            for (var i = 1; i < reslen; i++) {
+                if (res[i] == "NN") {
+                    newText += "<a href=''  data-toggle='tooltip' title='Proper Nown' data-placement='bottom' style='color:red'>" + res[i - 1].fontcolor("red") + "/NN</a>"
+
+
+                }
+                else if (res[i] == "IKM") {
+                    newText += "<a href=''  data-toggle='tooltip' title='Common Nown' data-placement='bottom' style='color:blue'>" + res[i - 1].fontcolor("blue") + "/IKM</a>";
+                }
+
+                else if (res[i] == "VN") {
+                    newText += "<a href=''  data-toggle='tooltip' title='Common Nown' data-placement='bottom' style='color:green'>" + res[i - 1].fontcolor("green") + "/VN</a>";
+                }
+
+                else if (res[i] == "YF") {
+                    newText += "<a href=''  data-toggle='tooltip' title='Sentence-final punctuation' data-placement='bottom' style='color:purple'>" + res[i - 1].fontcolor("purple") + "/YF</a>";
+                }
+
+                /*else if (res[i] == "IKM") {
+                    newText += "<a href=''  data-toggle='tooltip' title='Common Nown' data-placement='bottom' style='color:blue'>" + res[i - 1].fontcolor("blue") + "/IKM</a>";
+                }
+
+                else if (res[i] == "IKM") {
+                    newText += "<a href=''  data-toggle='tooltip' title='Common Nown' data-placement='bottom' style='color:blue'>" + res[i - 1].fontcolor("blue") + "/IKM</a>";
+                }
+
+                else if (res[i] == "IKM") {
+                    newText += "<a href=''  data-toggle='tooltip' title='Common Nown' data-placement='bottom' style='color:blue'>" + res[i - 1].fontcolor("blue") + "/IKM</a>";
+                }
+
+                else if (res[i] == "IKM") {
+                    newText += "<a href=''  data-toggle='tooltip' title='Common Nown' data-placement='bottom' style='color:blue'>" + res[i - 1].fontcolor("blue") + "/IKM</a>";
+                }*/
+
+                else {
+                    newText += " ";
+                }
+            }
+            s1.innerHTML = newText;
+        }
+    </script>
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+</script>
+
+
+</center>
+</body>
+</html>
